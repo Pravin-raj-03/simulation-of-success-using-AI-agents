@@ -1,0 +1,17 @@
+--- Final Results ---
+Avg Wealth (High Adaptability): $537,587,471
+Avg Wealth (Low Adaptability):  $22,463
+High Adaptability Advantage: 23932.4x
+
+--- Adaptability vs Luck Analysis ---
+Archetype
+Blessed & Smart    $196,423,232
+Average             $75,727,617
+Unlucky Genius      $34,982,875
+Doomed                  $38,383
+Lucky & Stuck           $33,914
+
+--- Head-to-Head: Genius vs Lucky Competent ---
+Agent Genius: Wealth=$90,459,024 | Adapt=95 | Luck=0.5
+Agent LuckyCompetent: Wealth=$110,005 | Adapt=75 | Luck=0.95
+Agent LuckyAvg: Wealth=$-40,267 | Adapt=50 | Luck=0.99
