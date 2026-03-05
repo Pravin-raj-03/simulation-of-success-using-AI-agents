@@ -124,6 +124,7 @@ class Simulation:
             agent = self.agent_map[a_id]
             agent.wealth += 5000 # Bonus
             agent.reputation += 1.0
+            agent.update_resources(0, 0, incident_desc="Earned a major promotion and performance bonus!")
             
         # Layoffs (adding insult to injury, they might have already earned 0)
         for i in range(bottom_10_cutoff, count):
@@ -131,6 +132,7 @@ class Simulation:
             agent = self.agent_map[a_id]
             agent.wealth -= 1000 # Severance cost / debt?
             agent.reputation -= 0.5
+            agent.update_resources(0, 0, incident_desc="Faced a setback: laid off due to poor relative performance.")
 
     def run(self):
         print(f"Starting Phase 2 Simulation: {len(self.agents)} agents.")
@@ -169,8 +171,7 @@ class Simulation:
                 agent.action_history[action] = agent.action_history.get(action, 0) + 1
                 
                 # 2. Update Resources
-                # 3. Update Resources
-                agent.update_resources(results['wealth_gain'], results['reputation_gain'])
+                agent.update_resources(results['wealth_gain'], results['reputation_gain'], incident_desc=results.get('description'))
                 
                 # Energy removed. Logic is now probabilistic only.
                 
@@ -276,9 +277,7 @@ class Simulation:
             if np.isnan(rg) or np.isinf(rg): rg = 0
             
             # Update Resources
-            agent.update_resources(wg, rg)
-            # Update Resources
-            agent.update_resources(wg, rg)
+            agent.update_resources(wg, rg, incident_desc=results.get('description'))
             
             # Energy removed. 
             

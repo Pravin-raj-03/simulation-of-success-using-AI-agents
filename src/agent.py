@@ -42,25 +42,20 @@ class Agent:
         # Stats tracking
         self.history = []
 
-    def update_resources(self, monetary_reward, social_reward):
+    def update_resources(self, monetary_reward, social_reward, incident_desc=None):
         self.wealth += monetary_reward
         self.reputation += social_reward
-        self.history.append({
+        
+        event_entry = {
             'age': self.age, 
-            'event': 'reward', 
+            'event': 'reward' if not incident_desc else 'incident', 
             'wealth_delta': monetary_reward, 
             'rep_delta': social_reward
-        })
-
-    def update_resources(self, monetary_reward, social_reward):
-        self.wealth += monetary_reward
-        self.reputation += social_reward
-        self.history.append({
-            'age': self.age, 
-            'event': 'reward', 
-            'wealth_delta': monetary_reward, 
-            'rep_delta': social_reward
-        })
+        }
+        if incident_desc:
+            event_entry['description'] = incident_desc
+            
+        self.history.append(event_entry)
 
     def check_survival(self):
         # Base survival probability

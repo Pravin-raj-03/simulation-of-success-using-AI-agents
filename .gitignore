@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# LaTeX
+*.tex
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.pdf
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+IEEE-Transactions-LaTeX2e-templates/
+
+# OS
+.DS_Store
+Thumbs.db

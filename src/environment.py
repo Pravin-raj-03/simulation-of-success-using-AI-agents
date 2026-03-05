@@ -54,15 +54,20 @@ class Environment:
             prob = self.calculate_success_probability(agent, difficulty, market_state)
             is_success = np.random.random() < prob
             
+            desc = "Successfully expanded professional network." if is_success else "Attempted to network, but gained little traction."
             return {
                 'wealth_gain': -15, 
                 'reputation_gain': 0.5 if is_success else 0.1,
                 'success': is_success,
+                'description': desc,
                 'network_success': is_success, 
                 'performance': 0
             }
         
-        return self._process_phase_logic(agent, market_state, action)
+        res = self._process_phase_logic(agent, market_state, action)
+        if 'description' not in res:
+            res['description'] = f"Standard activity in {self.name}."
+        return res
 
     def _process_phase_logic(self, agent, market_state, action):
         raise NotImplementedError
@@ -83,10 +88,16 @@ class EducationPhase(Environment):
         # Performance is just the probability * 100 + noise
         performance = (prob * 100) + np.random.normal(0, 5)
         
+        if success:
+            desc = "Graduated with honors!" if performance > 90 else "Completed educational tier successfully."
+        else:
+            desc = "Struggled with academic requirements."
+            
         return {
             'wealth_gain': 0,
             'reputation_gain': 0.5 if success else -0.1,
             'success': success,
+            'description': desc,
             'performance': performance
         }
 
@@ -123,21 +134,31 @@ class CareerPhase(Environment):
         success = np.random.random() < prob
         
         wealth_gain = 0
+        desc = ""
         if success:
             # Reward
             base_salary = BASE_SALARY
             multiplier = sector_params['reward_mult']
-            if action == 'Risk': multiplier *= 2.0
+            if action == 'Risk': 
+                multiplier *= 2.0
+                desc = f"High-risk project in {agent.sector} paid off handsomely!"
+            else:
+                desc = f"Steady progress in the {agent.sector} sector."
             
             wealth_gain = base_salary * multiplier
         else:
             # Failure Cost
-            if action == 'Risk': wealth_gain = -500
+            if action == 'Risk': 
+                wealth_gain = -500
+                desc = f"Aggressive move in {agent.sector} failed; incurred costs."
+            else:
+                desc = f"Difficult year in the {agent.sector} sector; minimal growth."
         
         return {
             'wealth_gain': wealth_gain,
             'reputation_gain': wealth_gain / 2000,
             'success': success,
+            'description': desc,
             'performance': wealth_gain
         }
 
@@ -191,27 +212,29 @@ class OpportunityPhase(Environment):
         
         capital = max(100, agent.wealth * 0.1)
         wealth_gain = 0
+        desc = ""
         
         if success:
             # Normal Distribution Return (Emergent Wealth)
-            # Mean 1.5 (50% ROI), Std 0.5
             roi = np.random.normal(1.5, 0.5)
-            # Cap negative ROI to -1.0 (loss of capital) just in case
             roi = max(-0.5, roi) 
             wealth_gain = capital * roi
+            
+            if roi > 2.0:
+                desc = "Major investment windfall! A stroke of incredible luck."
+            else:
+                desc = "Capitalized on a solid market opportunity."
         else:
-             # Loss is also Normal? Or fixed logic?
-             # Let's keep the existing Beta loss for now, or make it Normal negative.
-             # User said "Proocess must follow law". 
-             # Let's say failure is a negative ROI event.
-             loss_pct = np.random.normal(0.3, 0.1) # Mean 30% loss
+             loss_pct = np.random.normal(0.3, 0.1)
              loss_pct = max(0.0, min(1.0, loss_pct))
              wealth_gain = -capital * loss_pct
+             desc = "Investment opportunity soured; lost significant capital."
             
         return {
             'wealth_gain': wealth_gain,
             'reputation_gain': wealth_gain / 5000,
             'success': success,
+            'description': desc,
             'performance': wealth_gain
         }
 
@@ -225,12 +248,15 @@ class DeclinePhase(Environment):
         prob_survival = self.calculate_success_probability(agent, difficulty, market_state)
         
         damage = 0
+        desc = "Managed to navigate local crises without loss."
         if np.random.random() > prob_survival:
             damage = 1000
+            desc = "Hit by a significant life crisis; wealth depleted."
             
         return {
             'wealth_gain': -damage,
             'reputation_gain': 0,
             'success': damage == 0,
+            'description': desc,
             'performance': 0
         }
